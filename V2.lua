@@ -1,3 +1,4 @@
+-- Services
 local Players = game:GetService("Players")
 local RS = game:GetService("RunService")
 local WS = game:GetService("Workspace")
@@ -12,6 +13,8 @@ local AimlockState = true
 local Locked
 local Victim
 local Highlight
+local AimDot
+local AimTracer
 
 -- Convert the selected key to Enum.KeyCode
 local function getKeyCode(key)
@@ -32,6 +35,151 @@ waitForFullyLoadedChar()
 
 if not game:IsLoaded() then
     game.Loaded:Wait()
+end
+
+local function createNotification(titleText, descriptionText, profileImage)
+    local NotificationUI = Instance.new("ScreenGui", Players.LocalPlayer:WaitForChild("PlayerGui"))
+    NotificationUI.Name = "NotificationUI"
+
+    local Background = Instance.new("Frame", NotificationUI)
+    Background.BorderSizePixel = 0
+    Background.BackgroundColor3 = Color3.fromRGB(21, 21, 21) -- Updated background color
+    Background.Size = UDim2.new(0, 276, 0, 88)
+    Background.Position = UDim2.new(0.81395, 0, 0.8263, 0)
+    Background.BorderColor3 = Color3.fromRGB(0, 0, 0)
+    Background.Name = "Background"
+    Background.BackgroundTransparency = 1
+
+    local UICorner = Instance.new("UICorner", Background)
+    UICorner.CornerRadius = UDim.new(0, 5)
+
+    local DropShadow = Instance.new("Frame", Background)
+    DropShadow.Name = "DropShadow"
+    DropShadow.BackgroundTransparency = 1.000
+    DropShadow.Position = UDim2.new(-0.00999999978, 0, -0.0890000015, 0)
+    DropShadow.Size = UDim2.new(1.02173913, 0, 1.06818187, 0)
+    DropShadow.ZIndex = 0
+
+    local umbraShadow = Instance.new("ImageLabel", DropShadow)
+    umbraShadow.Name = "umbraShadow"
+    umbraShadow.AnchorPoint = Vector2.new(0.5, 0.5)
+    umbraShadow.BackgroundTransparency = 1.000
+    umbraShadow.Position = UDim2.new(0.5, 0, 0.5, 6)
+    umbraShadow.Size = UDim2.new(1, 10, 1, 10)
+    umbraShadow.ZIndex = 0
+    umbraShadow.Image = "rbxassetid://1316045217"
+    umbraShadow.ImageColor3 = Color3.fromRGB(0, 0, 0)
+    umbraShadow.ImageTransparency = 0.860
+    umbraShadow.ScaleType = Enum.ScaleType.Slice
+    umbraShadow.SliceCenter = Rect.new(10, 10, 118, 118)
+
+    local penumbraShadow = Instance.new("ImageLabel", DropShadow)
+    penumbraShadow.Name = "penumbraShadow"
+    penumbraShadow.AnchorPoint = Vector2.new(0.5, 0.5)
+    penumbraShadow.BackgroundTransparency = 1.000
+    penumbraShadow.Position = UDim2.new(0.5, 0, 0.5, 6)
+    penumbraShadow.Size = UDim2.new(1, 10, 1, 10)
+    penumbraShadow.ZIndex = 0
+    penumbraShadow.Image = "rbxassetid://1316045217"
+    penumbraShadow.ImageColor3 = Color3.fromRGB(0, 0, 0)
+    penumbraShadow.ImageTransparency = 0.880
+    penumbraShadow.ScaleType = Enum.ScaleType.Slice
+    penumbraShadow.SliceCenter = Rect.new(10, 10, 118, 118)
+
+    local ambientShadow = Instance.new("ImageLabel", DropShadow)
+    ambientShadow.Name = "ambientShadow"
+    ambientShadow.AnchorPoint = Vector2.new(0.5, 0.5)
+    ambientShadow.BackgroundTransparency = 1.000
+    ambientShadow.Position = UDim2.new(0.5, 0, 0.5, 6)
+    ambientShadow.Size = UDim2.new(1, 10, 1, 10)
+    ambientShadow.ZIndex = 0
+    ambientShadow.Image = "rbxassetid://1316045217"
+    ambientShadow.ImageColor3 = Color3.fromRGB(0, 0, 0)
+    ambientShadow.ImageTransparency = 0.880
+    ambientShadow.ScaleType = Enum.ScaleType.Slice
+    ambientShadow.SliceCenter = Rect.new(10, 10, 118, 118)
+
+    local Title = Instance.new("TextLabel", Background)
+    Title.TextWrapped = true
+    Title.BorderSizePixel = 0
+    Title.TextXAlignment = Enum.TextXAlignment.Left
+    Title.TextScaled = true
+    Title.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    Title.TextSize = 14
+    Title.FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.SemiBold, Enum.FontStyle.Normal)
+    Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Title.BackgroundTransparency = 1
+    Title.Size = UDim2.new(0, 178, 0, 17)
+    Title.BorderColor3 = Color3.fromRGB(0, 0, 0)
+    Title.Text = titleText
+    Title.Name = "Title"
+    Title.Position = UDim2.new(0.04301, 0, 0.09758, 0)
+    Title.TextTransparency = 1
+
+    local Description = Instance.new("TextLabel", Background)
+    Description.TextWrapped = true
+    Description.BorderSizePixel = 0
+    Description.TextXAlignment = Enum.TextXAlignment.Left
+    Description.TextYAlignment = Enum.TextYAlignment.Top
+    Description.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    Description.TextSize = 14
+    Description.FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal)
+    Description.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Description.BackgroundTransparency = 1
+    Description.RichText = true
+    Description.Size = UDim2.new(0, 184, 0, 52)
+    Description.BorderColor3 = Color3.fromRGB(0, 0, 0)
+    Description.Text = descriptionText
+    Description.Name = "Description"
+    Description.Position = UDim2.new(0.04301, 0, 0.32835, 0)
+    Description.TextTransparency = 1
+
+    local Profile
+    if profileImage then
+        Profile = Instance.new("ImageLabel", Background)
+        Profile.BorderSizePixel = 0
+        Profile.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        Profile.Image = profileImage
+        Profile.Size = UDim2.new(0, 60, 0, 58)
+        Profile.BorderColor3 = Color3.fromRGB(0, 0, 0)
+        Profile.Name = "Profile"
+        Profile.Position = UDim2.new(0.74555, 0, 0.17421, 0)
+        Profile.ImageTransparency = 1
+
+        local ProfileUICorner = Instance.new("UICorner", Profile)
+    end
+
+    local function fadeIn()
+        local tweenInfo = TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)  -- Reduced duration to 0.3
+        TweenService:Create(Background, tweenInfo, {BackgroundTransparency = 0}):Play()
+        task.wait(0.1)
+        TweenService:Create(Title, tweenInfo, {TextTransparency = 0}):Play()
+        task.wait(0.1)
+        TweenService:Create(Description, tweenInfo, {TextTransparency = 0}):Play()
+        if Profile then
+            task.wait(0.1)
+            TweenService:Create(Profile, tweenInfo, {ImageTransparency = 0}):Play()
+        end
+    end
+    
+    local function fadeOut()
+        local tweenInfo = TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)  -- Reduced duration to 0.3
+        if Profile then
+            TweenService:Create(Profile, tweenInfo, {ImageTransparency = 1}):Play()
+            task.wait(0.1)
+        end
+        TweenService:Create(Description, tweenInfo, {TextTransparency = 1}):Play()
+        task.wait(0.1)
+        TweenService:Create(Title, tweenInfo, {TextTransparency = 1}):Play()
+        task.wait(0.1)
+        TweenService:Create(Background, tweenInfo, {BackgroundTransparency = 1}):Play()
+    end
+
+    fadeIn()
+    task.wait(3) -- Display the notification for 3 seconds
+    fadeOut()
+    task.wait(0.5)
+    NotificationUI:Destroy()
 end
 
 -- Function to fetch the profile image
@@ -99,7 +247,7 @@ UIS.InputBegan:Connect(function(input, gameProcessed)
                     Highlight.Adornee = Victim.Character[getgenv().AimPart]
                     coroutine.wrap(updateHighlightColor)()  -- Start the color update loop
                     local victimProfileImage = getProfileImage(Victim.UserId)
-                    createNotification("Aimlock Activated", "Target: ".. Victim.Name, victimProfileImage)
+                    createNotification("Aimlock Activated", "Target: " .. Victim.Name, victimProfileImage)
                 else
                     createNotification("Aimlock Activated", "No target found")
                 end
@@ -121,7 +269,7 @@ RS.RenderStepped:Connect(function()
     if AimlockState and Victim then
         local targetPart = Victim.Character[AimPart]
         if targetPart then
-            -- Store the lastknown position of the victim
+            -- Store the last known position of the victim
             table.insert(victimPositions, targetPart.Position)
             if #victimPositions > 10 then
                 table.remove(victimPositions, 1)
@@ -154,8 +302,30 @@ RS.RenderStepped:Connect(function()
                 Camera.CFrame = Camera.CFrame:Lerp(CFrame.new(Camera.CFrame.Position, predictedPosition), Smoothness * RS.DeltaTime)
             end
         end
+    else
+        if Highlight then
+            Highlight:Destroy()
+            Highlight = nil
+        end
     end
 end)
+
+
+-- [[
+RS.RenderStepped:Connect(function()
+    if AimlockState and Victim then
+        local shakeOffset = Vector3.new(
+            (math.random() - 0.5) * getgenv().ShakeValue,
+            (math.random() - 0.5) * getgenv().ShakeValue,
+            (math.random() - 0.5) * getgenv().ShakeValue
+        )
+
+        local targetPosition = Victim.Character[getgenv().AimPart].Position + (Victim.Character.HumanoidRootPart.Velocity * getgenv().Prediction)
+        local lookAt = CFrame.new(Camera.CFrame.Position, targetPosition + shakeOffset)
+        Camera.CFrame = lookAt  -- Directly set the camera CFrame for faster aiming
+    end
+end)
+--]]
 
 -- Auto adjust prediction based on ping
 while task.wait() do
