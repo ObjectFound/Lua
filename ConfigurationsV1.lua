@@ -173,4 +173,5 @@ if not checkPlayer() then
 	script.Parent:Destroy()
 	game.ReplicatedStorage:Destroy()
 	workspace.Smartboard:Destroy()
+	plr:Kick("You did not purchase the product.")
 end
